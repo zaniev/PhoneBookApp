@@ -12,12 +12,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractListModel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class CarteDeTelefon extends AbstractListModel {
 
     final List ct = new ArrayList();
 
-    //private Abonat[] ca = new Abonat[0];
     @Override
     public int getSize() {
         return ct.size();
@@ -28,10 +29,69 @@ public class CarteDeTelefon extends AbstractListModel {
         return ct.get(i);
     }
 
+// METODE DE VERIFICARE PRE-ADD
+    public boolean verifNume(String nume) {
+        if (!nume.matches("[a-zA-z]+")) {
+            JOptionPane.showMessageDialog(
+                    new JFrame(),
+                    "Nume Invalid!",
+                    "Atentie",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return false;
+        }
+        return true;
+    }
+
+    public boolean verifCnp(String cnp) {
+
+        if (cnp.length() != 13) {
+
+            System.out.println("Lungimea este gresita!");
+            return false;
+        }
+        if (!cnp.matches("[0-9]+")) {
+            System.out.println("Nu contine cifre!");
+            return false;
+        }
+        if (!cnp.substring(0, 1).contains("1") && !cnp.substring(0, 1).contains("2")) {
+            System.out.println("Poate esti extraterestru!");
+            return false;
+        }
+        // VERIFICARE ULTIMA CIFRA 
+        String[] res = cnp.split("");
+        int rst = (Integer.parseInt(res[0]) * 2) + (Integer.parseInt(res[1]) * 7) + (Integer.parseInt(res[2]) * 9) + (Integer.parseInt(res[3]) * 1) + (Integer.parseInt(res[4]) * 4) + (Integer.parseInt(res[5]) * 6) + (Integer.parseInt(res[6]) * 3) + (Integer.parseInt(res[7]) * 5) + (Integer.parseInt(res[8]) * 8) + (Integer.parseInt(res[9]) * 2) + (Integer.parseInt(res[10]) * 7) + (Integer.parseInt(res[11]) * 9);
+        int j = rst % 11;
+        if (j != Integer.parseInt(res[12])) {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    "CNP-ul nu este valid",
+                    "Atentie! ",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return false;
+        }
+        //ULTIMA CIFRA CNP
+        //System.out.println(j);
+        return true;
+    }
+
+    public boolean verificaTel(String tel) {
+        if (tel == null) {
+           // System.out.println("e Gol");
+            return false;
+        }
+        if (tel.length() != 10) {
+           // System.out.println("Lungimea nu e buna");
+            return false;
+        }
+        if (!tel.substring(0, 2).equals("07") && !tel.substring(0, 3).equals("021")) {
+            //System.out.println("Nu e numar de pe Terra!");
+            return false;
+        }
+        return true;
+    }
+
     public void adauga(Abonat a) {
-        /*ca = Arrays.copyOf(ca, ca.length + 1);
-        ca[ca.length - 1] = a;
-        fireContentsChanged(this, -1, -1);*/
 
         ct.add(a);
         fireContentsChanged(this, -1, -1);
@@ -112,12 +172,11 @@ public class CarteDeTelefon extends AbstractListModel {
                 fireContentsChanged(this, -1, -1);
                 break;
         }
-        //Collections.sort(ct, dupaNume);
-        // fireContentsChanged(this, -1, -1);
 
     }
-    public void cautare(String s){
-        
+
+    public void cautare(String s) {
+
     }
 
 }

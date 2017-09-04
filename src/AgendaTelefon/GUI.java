@@ -26,7 +26,7 @@ import javax.swing.JOptionPane;
 public class GUI extends javax.swing.JFrame {
 
     private CarteDeTelefon model = new CarteDeTelefon();
-   
+
     public void golireText() {
 // METODA GOLIRE CASUTE TEXT-ADAUGARE  
         tel.setText("");
@@ -105,9 +105,7 @@ public class GUI extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem10 = new javax.swing.JMenuItem();
 
-        reg.setMaximumSize(new java.awt.Dimension(400, 178));
         reg.setMinimumSize(new java.awt.Dimension(400, 178));
-        reg.setPreferredSize(new java.awt.Dimension(374, 178));
         reg.setResizable(false);
 
         keyreg.setText("jPasswordField1");
@@ -152,8 +150,8 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(122, 122, 122))
         );
 
-        about.setMinimumSize(new java.awt.Dimension(580, 345));
-        about.setPreferredSize(new java.awt.Dimension(580, 345));
+        about.setMinimumSize(new java.awt.Dimension(580, 390));
+        about.setPreferredSize(new java.awt.Dimension(580, 390));
         about.setResizable(false);
 
         jButton1.setText("Inchide");
@@ -186,7 +184,7 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel11)
-                        .addGap(0, 51, Short.MAX_VALUE)))
+                        .addGap(0, 36, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -217,9 +215,9 @@ public class GUI extends javax.swing.JFrame {
                         .addGroup(aboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(aboutLayout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(41, 41, 41)
+                                .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton1)))
                         .addGap(22, 22, 22))))
@@ -236,7 +234,7 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(jButton1)
                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
-                .addContainerGap())
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         inchidere.setLocation(new java.awt.Point(0, 0));
@@ -570,13 +568,15 @@ public class GUI extends javax.swing.JFrame {
         String cnpp = cnp.getText();
         String nm = nume.getText();
         String pn = prenume.getText();
+        if (model.verifNume(nm) && model.verifCnp(cnpp) && model.verificaTel(nrtelefon)) {
+            model.adauga(nm, pn, temp, cnpp);
+            golireText();
+            cautare.setEnabled(true);
+            sort.setEnabled(true);
+            modif.setEnabled(true);
+            stergere.setEnabled(true);
+        }
 
-        model.adauga(nm, pn, temp, cnpp);
-        golireText();
-        cautare.setEnabled(true);
-        sort.setEnabled(true);
-        modif.setEnabled(true);
-        stergere.setEnabled(true);
 
     }//GEN-LAST:event_adaugareActionPerformed
 
@@ -673,16 +673,16 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-       about.setVisible(true); 
+        about.setVisible(true);
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       about.setVisible(false);
+        about.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void lKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lKeyPressed
-        
-      //  model.sterge(l.getSelectedIndex());
+
+        //  model.sterge(l.getSelectedIndex());
     }//GEN-LAST:event_lKeyPressed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
