@@ -7,9 +7,14 @@ package AgendaTelefon;
 
 public class nrTel {
 
+    
+
     private String tel;
 
     public nrTel(String tel) {
+        this.tel = tel;
+    }
+    public void setTel(String tel) {
         this.tel = tel;
     }
 

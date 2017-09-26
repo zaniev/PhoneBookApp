@@ -6,6 +6,7 @@
 package AgendaTelefon;
 
 import AgendaTelefon.Abonat;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,9 +16,9 @@ import javax.swing.AbstractListModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-public class CarteDeTelefon extends AbstractListModel {
+public class CarteDeTelefon extends AbstractListModel implements Serializable{
 
-    final List ct = new ArrayList();
+    private List ct = new ArrayList();
 
     @Override
     public int getSize() {
@@ -77,11 +78,11 @@ public class CarteDeTelefon extends AbstractListModel {
 
     public boolean verificaTel(String tel) {
         if (tel == null) {
-           // System.out.println("e Gol");
+            // System.out.println("e Gol");
             return false;
         }
         if (tel.length() != 10) {
-           // System.out.println("Lungimea nu e buna");
+            // System.out.println("Lungimea nu e buna");
             return false;
         }
         if (!tel.substring(0, 2).equals("07") && !tel.substring(0, 3).equals("021")) {
@@ -90,6 +91,9 @@ public class CarteDeTelefon extends AbstractListModel {
         }
         return true;
     }
+   // public List<Abonat> getAbonati() {
+  //      return abonati;
+   // }
 
     public void adauga(Abonat a) {
 
@@ -98,6 +102,14 @@ public class CarteDeTelefon extends AbstractListModel {
 
     }
 
+    /* public void veriff(String s){
+        
+       for (int i=0; i< ct.size(); i++){
+            if(ct.indexOf(i).getName().equals(s)){
+                
+            }
+        }
+    }*/
     public void adauga(String n, String p, nrTel t, String cnp) {
         adauga(new Abonat(n, p, t, cnp));
     }
@@ -175,8 +187,17 @@ public class CarteDeTelefon extends AbstractListModel {
 
     }
 
-    public void cautare(String s) {
-
-    }
+   /* public void cautare(String s) {
+        List<Abonat> filtered = new ArrayList<Abonat>();
+        for (int i = 0; i<ct.size(); i++){
+            Abonat a = (Abonat) ct.get(i);
+            if(a.getNume().matches(s) || a.getPrenume().matches(s) || a.getCnp().matches(s) || a.getCnp().matches(s)){
+                filtered.add(a);
+            }
+            
+        }
+        this.ct = filtered;
+        
+    }*/
 
 }

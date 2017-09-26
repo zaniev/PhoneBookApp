@@ -7,11 +7,12 @@ package AgendaTelefon;
 
 import AgendaTelefon.nrTel;
 import java.io.IOException;
+import java.io.Serializable;
 import javax.swing.JOptionPane;
 import java.lang.Exception;
 import java.util.Comparator;
 
-public class Abonat implements Comparable {
+public class Abonat implements Serializable{
 
     private String nume;
     private String prenume;
@@ -79,11 +80,6 @@ public class Abonat implements Comparable {
 
     public String getCnp() {
         return cnp;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

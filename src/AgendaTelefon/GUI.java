@@ -11,21 +11,78 @@ import AgendaTelefon.CarteDeTelefon;
 import javax.swing.JList;
 import AgendaTelefon.Abonat;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import AgendaTelefon.nrTel;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.ObjectOutputStream;
 
 /**
+ * ImageIcon(getClass().getResource
  *
  * @author Razvan
  */
 public class GUI extends javax.swing.JFrame {
 
+    private final Timer reclama;
+    File file;
+
+    TimerTask tas = new TimerTask() {
+
+        private int pozaCurenta = 0;
+        private File[] poze = new File("src\\AgendaTelefon\\reclama").listFiles();
+        ImageIcon i = new ImageIcon(poze[pozaCurenta].getAbsolutePath());
+
+        public void run() {
+
+            // if (pozaCurenta < poze.length ) {
+            //  pozaCurenta++;
+            ImageIcon i = new ImageIcon(poze[Math.abs((int) (Math.random() * poze.length))].getAbsolutePath());
+            add.setIcon(i);
+            add.setText("");
+            //}
+            /*if (pozaCurenta == poze.length -1) {
+                pozaCurenta = 0;
+                ImageIcon i = new ImageIcon(poze[pozaCurenta].getAbsolutePath());
+                add.setIcon(i);
+                add.setText("");
+            }*/
+        }
+    };
+
     private CarteDeTelefon model = new CarteDeTelefon();
+
+    public static void showFiles(File[] files) {
+        for (File file : files) {
+            if (file.isDirectory()) {
+                System.out.println("Directory: " + file.getName());
+                showFiles(file.listFiles()); // Calls same method again.
+            } else {
+                System.out.println("File: " + file.getName());
+            }
+        }
+    }
 
     public void golireText() {
 // METODA GOLIRE CASUTE TEXT-ADAUGARE  
@@ -35,9 +92,24 @@ public class GUI extends javax.swing.JFrame {
         prenume.setText("");
     }
 
+    public CarteDeTelefon cautare(String s, CarteDeTelefon c) {
+        List<Abonat> filtered = new ArrayList<Abonat>();
+        for (int i = 0; i < c.getSize(); i++) {
+            Abonat a = (Abonat) c.getElementAt(i);
+            if (a.getNume().contains(s) || a.getPrenume().contains(s) || a.getCnp().contains(s) || a.getCnp().contains(s)) {
+                filtered.add(a);
+            }
+
+        }
+        return (CarteDeTelefon) filtered;
+    }
+
     public GUI() {
         initComponents();
         l.setModel(model);
+        reclama = new Timer();
+        reclama.scheduleAtFixedRate(tas, 0, 2000);
+
     }
 
     /**
@@ -68,6 +140,8 @@ public class GUI extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        fco = new javax.swing.JFileChooser();
+        fcs = new javax.swing.JFileChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         l = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
@@ -89,6 +163,7 @@ public class GUI extends javax.swing.JFrame {
         jRadioButton3 = new javax.swing.JRadioButton();
         jRadioButton4 = new javax.swing.JRadioButton();
         add = new javax.swing.JLabel();
+        filtru = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         m0 = new javax.swing.JMenu();
         mopen = new javax.swing.JMenuItem();
@@ -151,7 +226,6 @@ public class GUI extends javax.swing.JFrame {
         );
 
         about.setMinimumSize(new java.awt.Dimension(580, 390));
-        about.setPreferredSize(new java.awt.Dimension(580, 390));
         about.setResizable(false);
 
         jButton1.setText("Inchide");
@@ -320,12 +394,20 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(l);
 
+        jLabel1.setDisplayedMnemonic('n');
+        jLabel1.setLabelFor(nume);
         jLabel1.setText("Nume");
 
+        jLabel2.setDisplayedMnemonic('p');
+        jLabel2.setLabelFor(prenume);
         jLabel2.setText("Prenume");
 
+        jLabel3.setDisplayedMnemonic('c');
+        jLabel3.setLabelFor(cnp);
         jLabel3.setText("CNP");
 
+        jLabel4.setDisplayedMnemonic('e');
+        jLabel4.setLabelFor(tel);
         jLabel4.setText("Telefon");
 
         adaugare.setMnemonic('a');
@@ -351,6 +433,11 @@ public class GUI extends javax.swing.JFrame {
         cautare.setText("Cautare");
         cautare.setToolTipText("Cautati in lista dupa criteriul selectat");
         cautare.setEnabled(false);
+        cautare.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cautareActionPerformed(evt);
+            }
+        });
 
         stergere.setText("Stergere");
         stergere.setToolTipText("Stergere abonat din lista");
@@ -412,15 +499,26 @@ public class GUI extends javax.swing.JFrame {
 
         add.setText("Insert your adds here!");
         add.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        add.setPreferredSize(new java.awt.Dimension(300, 128));
 
         m0.setText("File");
 
         mopen.setText("Open");
         mopen.setEnabled(false);
+        mopen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mopenActionPerformed(evt);
+            }
+        });
         m0.add(mopen);
 
         msave.setText("Save");
         msave.setEnabled(false);
+        msave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                msaveActionPerformed(evt);
+            }
+        });
         m0.add(msave);
         m0.add(jSeparator1);
 
@@ -487,7 +585,7 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel1)
@@ -500,16 +598,18 @@ public class GUI extends javax.swing.JFrame {
                                     .addComponent(cnp, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(tel, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(nume)))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(modif, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(adaugare, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(cautare, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(stergere, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)))
+                            .addComponent(modif, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(adaugare, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(cautare, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(stergere, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(filtru, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)))
                         .addGap(38, 38, 38)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
+                        .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(sort)
@@ -542,24 +642,27 @@ public class GUI extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(modif)
                         .addGap(18, 18, 18)
-                        .addComponent(cautare)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cautare)
+                            .addComponent(filtru, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(stergere))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 28, Short.MAX_VALUE)
+                        .addGap(18, 18, Short.MAX_VALUE)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sort, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(19, 19, 19))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void adaugareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adaugareActionPerformed
@@ -597,7 +700,7 @@ public class GUI extends javax.swing.JFrame {
     private void modifActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifActionPerformed
         //int pozitie = l.getSelectedIndex();
 
-        if (model.ct.size() == 0) {
+        if (model.getSize() == 0) {
             JOptionPane.showMessageDialog(new JFrame(), "Nu ati selectat un Abonat!", "Atentie! ", JOptionPane.ERROR_MESSAGE);
         } else {
             cautare.setEnabled(false);
@@ -655,16 +758,20 @@ public class GUI extends javax.swing.JFrame {
 
     private void inregActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inregActionPerformed
         char[] get = keyreg.getPassword();
-        String temp = Arrays.toString(get).replaceAll("\\[|\\]|,|\\s", "");
+        String temp = String.valueOf(get);
 
         if (temp.equals("test123")) {
             reg.setVisible(false);
-            JOptionPane.showMessageDialog(new JFrame(), "Va multumim pentru Inregistreare!", "Info ", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(new JFrame(), "Va multumim pentru Inregistreare!",
+                    "Info ",
+                    JOptionPane.INFORMATION_MESSAGE);
             adaugare.setEnabled(true);
             mopen.setEnabled(true);
             msave.setEnabled(true);
             m1.setEnabled(true);
             inreg.setEnabled(false);
+            add.setVisible(false);
+
         }
     }//GEN-LAST:event_inregActionPerformed
 
@@ -693,6 +800,71 @@ public class GUI extends javax.swing.JFrame {
         inchidere.setVisible(false);
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void cautareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cautareActionPerformed
+        String ff = filtru.getText();
+        l.setModel(cautare(ff, model));
+
+    }//GEN-LAST:event_cautareActionPerformed
+
+    private void mopenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mopenActionPerformed
+         fco.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if(fco.showOpenDialog(this)==JFileChooser.APPROVE_OPTION)
+       {
+             file=fco.getSelectedFile();
+           if(file.exists() && file.getName().toLowerCase().endsWith(".txt"))
+           {
+              BufferedReader bfw=null;
+                try {
+                    bfw = new BufferedReader(new FileReader(file));
+ 
+                        String readLine = bfw.readLine();
+                        String line;
+                        while(( line= bfw.readLine()) != null)
+                            
+                        {
+                        String[] s =line.split("\t");
+                            nrTel tel = new nrTel(s[2]);
+                            model.adauga(s[0],s[1],tel,s[3]);  
+                         }
+                    bfw.close();
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                catch(IllegalArgumentException e)
+                {
+                    JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
+                    "EROARE",
+                    JOptionPane.ERROR_MESSAGE
+                    );}
+           }
+       }        
+    }//GEN-LAST:event_mopenActionPerformed
+
+    private void msaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msaveActionPerformed
+      /*  fcs.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        if( fcs.showSaveDialog(this)==JFileChooser.APPROVE_OPTION ){
+             
+                 fcs.showOpenDialog(fcs);
+        try {
+            // Create file 
+            FileOutputStream file = new FileOutputStream(fcs.getSelectedFile() + ".txt");
+            ObjectOutputStream fileout = new ObjectOutputStream(file);
+
+            fileout.writeObject(model.getAbonati());
+            fileout.close();
+            file.flush();
+            file.close();
+            System.out.println("success");
+        } catch (IOException e) {
+            System.out.println("    exceptia a fostprinsa");
+        } 
+       }*/
+    }//GEN-LAST:event_msaveActionPerformed
+           
     /**
      * @param args the command line arguments
      */
@@ -724,15 +896,21 @@ public class GUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
 
-                /*   new SplashGUI().setVisible(true);
-               
-                //Thread.currentThread().getName();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                }*/
-                new GUI().setVisible(true);
+                //new SplashGUI().setVisible(true);
+                java.awt.EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            //    SplashGUI s = new SplashGUI();
+                            //    s.setVisible(true);
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ex) {
+                            return;
+                        }
+                        new GUI().setVisible(true);
+                    }
+                });
+
             }
         });
     }
@@ -745,6 +923,9 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton cautare;
     private javax.swing.JTextField cnp;
     private javax.swing.JMenuItem ext;
+    private javax.swing.JFileChooser fco;
+    private javax.swing.JFileChooser fcs;
+    private javax.swing.JTextField filtru;
     private javax.swing.JDialog inchidere;
     private javax.swing.JButton inreg;
     private javax.swing.JButton jButton1;
